@@ -31,6 +31,11 @@ class ServiceAreaCompany(BaseModel):
         verbose_name = 'Company Service Area'
         verbose_name_plural = 'Company Service Areas'
 
+
+    @classmethod
+    def latest(cls):
+        return cls.objects.select_related().order_by('-created_at')[0]
+
 class Point(BaseModel):
     service_area = models.ForeignKey(ServiceAreaCompany, related_name='points')
     longitude = models.DecimalField(max_digits=9, decimal_places=6)

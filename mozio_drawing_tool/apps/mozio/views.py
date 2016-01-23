@@ -9,7 +9,7 @@ from .models import ServiceAreaCompany
 
 
 def index(request):
-    latest_service_area = ServiceAreaCompany.objects.select_related().order_by('-created_at')[0]
+    latest_service_area = ServiceAreaCompany.latest
 
     context = {
         'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY,
@@ -27,6 +27,7 @@ def create_service_area(request):
             # points must be sent like a list
             points = request.POST.getlist('latitude_and_longitude[]')
 
+            # if points were provided, proceed
             if len(points) > 0:
                 form.save(points)
                 messages.success(request, _('Success! Your Service Area was saved!'))
