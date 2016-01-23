@@ -1,0 +1,1 @@
+from mozio mozio_drawing_tool.settings.base import *
