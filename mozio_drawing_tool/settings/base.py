@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'mozio_drawing_tool.apps.mozio',
 ]
 
 MIDDLEWARE_CLASSES = [
