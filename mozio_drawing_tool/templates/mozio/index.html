@@ -5,11 +5,39 @@
 
 {% block content %}
   <h2>Define your Service Area</h2>
-  <div id="map" style="width: 1080px; height: 550px;"></div>
+
+  <div class="row">
+    <div class="col-lg-8">
+       <div id="map" style="width: 850px; height: 550px;"></div>
+    </div>
+
+    <div class="col-lg-4">
+      <input type="button" id="clear-btn" class="btn btn-md btn-danger"
+             value='{% trans "Clear shape" %}' />
+    </div>
+  </div>
 {% endblock %}
 
 {% block js_scripts %}
       <script>
+        var drawingManager;
+        var selectedShape;
+
+        // function to set the shape
+        function setSelection(shape){
+          selectedShape = shape;
+        }
+
+        // function to delete the selected shape
+        function deleteSelectedShape(){
+          if(selectedShape){
+            selectedShape.setMap(null);
+          }else{
+            alert('{% trans "No shape drawn. There is nothing to clean." %}');
+          }
+        }
+
+        // initialize the map
         function initMap() {
           var map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: 37.770767, lng: -122.424877}, // San Franscisco
@@ -25,40 +53,48 @@
             }
           });
 
-          var drawingManager = new google.maps.drawing.DrawingManager({
+          drawingManager = new google.maps.drawing.DrawingManager({
             drawingMode: google.maps.drawing.OverlayType.MARKER,
             drawingControl: true,
             drawingControlOptions: {
               position: google.maps.ControlPosition.TOP_CENTER,
               drawingModes: [
-                google.maps.drawing.OverlayType.MARKER,
-                google.maps.drawing.OverlayType.CIRCLE,
                 google.maps.drawing.OverlayType.POLYGON,
-                google.maps.drawing.OverlayType.POLYLINE,
-                google.maps.drawing.OverlayType.RECTANGLE
               ]
             },
-            markerOptions: {icon: 'images/beachflag.png'},
-            circleOptions: {
+            polygonOptions: {
               fillColor: '#ffff00',
-              fillOpacity: 1,
+              fillOpacity: 0.4,
               strokeWeight: 5,
               clickable: false,
-              editable: true,
+              editable: false,
               zIndex: 1
             }
           });
 
           drawingManager.setMap(map);
 
-
-
+          // when the drawing is complete
           google.maps.event.addListener(drawingManager, 'polygoncomplete', function (polygon) {
-            var coordinates = (polygon.getPath().getArray());
-            for(var i = 0; i < coordinates.length; i++){
-              console.log(i + ' - LAT: ' + coordinates[i].lat() + ' LNG: ' + coordinates[i].lng());
-            }
+              // disable drawing mode
+              drawingManager.setDrawingMode(null);
+
+              // Add an event listener that selects the newly-drawn shape when the user
+              // mouses down on it.
+              google.maps.event.addListener(polygon, 'click', function() {
+                setSelection(polygon);
+              });
+
+              setSelection(polygon);
+
+              var coordinates = (polygon.getPath().getArray());
+              for(var i = 0; i < coordinates.length; i++){
+                console.log(i + ' - LAT: ' + coordinates[i].lat() + ' LNG: ' + coordinates[i].lng());
+              }
           });
+
+          // Add an dom listener that deletes the last drawn shape
+          google.maps.event.addDomListener(document.getElementById('clear-btn'), 'click', deleteSelectedShape);
       }
     </script>
 
