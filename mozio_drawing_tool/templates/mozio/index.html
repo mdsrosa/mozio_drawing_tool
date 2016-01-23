@@ -12,45 +12,114 @@
     </div>
 
     <div class="col-lg-4">
+      <h4>Your Service Area coordinates:</h4>
+      <div class="row">
+        <span class="col-lg-7" id="empty-points-message">No service area has been drawn yet.</span>
+        <div id="points"></div>
+      </div>
+      <br/><br/>
+
       <input type="button" id="clear-btn" class="btn btn-md btn-danger"
              value='{% trans "Clear shape" %}' />
+      <input type="submit" id="submit-btn" class="btn btn-md btn-success"
+             value='{% trans "Submit Service Area" %}' />
     </div>
   </div>
+  <br />
 {% endblock %}
 
 {% block js_scripts %}
       <script>
         var drawingManager;
         var selectedShape;
+        var infoWindow;
+
+        function clearSelection(){
+          if(selectedShape){
+            selectedShape.setEditable(false);
+            selectedShape = null;
+          }
+        }
 
         // function to set the shape
         function setSelection(shape){
+          clearSelection();
           selectedShape = shape;
+          shape.setEditable(true);
         }
 
         // function to delete the selected shape
         function deleteSelectedShape(){
           if(selectedShape){
             selectedShape.setMap(null);
+            $('#points').html('');
           }else{
-            alert('{% trans "No shape drawn. There is nothing to clean." %}');
+            alert('{% trans "No shape found. There is nothing to clean." %}');
           }
+          $('#empty-points-message').show();
+        }
+
+        function updatePoints(shape){
+          console.log('Polygon changed (SET_AT).');
+          var coordinates = (shape.getPath().getArray());
+          $('#empty-points-message').hide();
+          $('#points').html(''); // clean old points
+          for(var i = 0; i < coordinates.length; i++){
+            // update the fields for the latitude and longitude
+            $('#points').append('<div>Point '+ i + ': ' + ' <b>LAT</b>: ' + coordinates[i].lat() + ' <b>LNG</b>: ' + coordinates[i].lng() + '</div>');
+          }
+          setSelection(shape);
+        }
+
+        function manageOverlay(event){
+          if(event.type != google.maps.drawing.OverlayType.MARKER) {
+            drawingManager.setDrawingMode(null);
+
+            var newShape = event.overlay;
+            newShape.type = event.type;
+
+            google.maps.event.addListener(newShape, 'click', function(){
+                setSelection(newShape);
+
+                google.maps.event.addListener(newShape.getPath(), 'set_at', function(){
+                    console.log('Polygon changed (SET_AT).');
+                    updatePoints(newShape);
+                });
+
+                google.maps.event.addListener(newShape.getPath(), 'insert_at', function(){
+                    console.log('Polygon changed (INSERT_AT).');
+                    updatePoints(newShape);
+                });
+
+                google.maps.event.addListener(newShape.getPath(), 'remove_at', function(){
+                    console.log('Polygon changed (REMOVE_AT).');
+                    updatePoints(newShape);
+                });
+            });
+
+            setSelection(newShape);
+          }
+        }
+
+        function managePolygon(polygon){
+          console.log('Polygon is complete.');
+          updatePoints(polygon);
         }
 
         // initialize the map
         function initMap() {
-          var map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 37.770767, lng: -122.424877}, // San Franscisco
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            zoom: 15,
-            draggable: true,
-            mapTypeControl: false,
-            panControl: false,
-            streetViewControl: false,
-            zoomControl: true,
-            zoomControlOptions: {
-              style: google.maps.ZoomControlStyle.SMALL
-            }
+            var map = new google.maps.Map(document.getElementById('map'), {
+              center: {lat: 37.770767, lng: -122.424877}, // San Franscisco
+              mapTypeId: google.maps.MapTypeId.ROADMAP,
+              zoom: 15,
+              draggable: true,
+              mapTypeControl: false,
+              panControl: false,
+              streetViewControl: false,
+              zoomControl: true,
+              zoomControlOptions: {
+                style: google.maps.ZoomControlStyle.SMALL
+              }
           });
 
           drawingManager = new google.maps.drawing.DrawingManager({
@@ -63,35 +132,21 @@
               ]
             },
             polygonOptions: {
-              fillColor: '#ffff00',
-              fillOpacity: 0.4,
-              strokeWeight: 5,
-              clickable: false,
-              editable: false,
-              zIndex: 1
+              editable: false
             }
           });
 
+          // creates the map
           drawingManager.setMap(map);
 
-          // when the drawing is complete
-          google.maps.event.addListener(drawingManager, 'polygoncomplete', function (polygon) {
-              // disable drawing mode
-              drawingManager.setDrawingMode(null);
+          // triggered when the polygon is complete
+          google.maps.event.addListener(drawingManager, 'overlaycomplete', manageOverlay);
+          google.maps.event.addListener(drawingManager, 'polygoncomplete', managePolygon);
 
-              // Add an event listener that selects the newly-drawn shape when the user
-              // mouses down on it.
-              google.maps.event.addListener(polygon, 'click', function() {
-                setSelection(polygon);
-              });
-
-              setSelection(polygon);
-
-              var coordinates = (polygon.getPath().getArray());
-              for(var i = 0; i < coordinates.length; i++){
-                console.log(i + ' - LAT: ' + coordinates[i].lat() + ' LNG: ' + coordinates[i].lng());
-              }
-          });
+          // clear the current selection when the drawing mode is changed
+          // or when the map is clicked.
+          google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
+          google.maps.event.addListener(map, 'click', clearSelection);
 
           // Add an dom listener that deletes the last drawn shape
           google.maps.event.addDomListener(document.getElementById('clear-btn'), 'click', deleteSelectedShape);
