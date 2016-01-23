@@ -3,4 +3,64 @@
 
 {% block page_title %} {% trans "First Page" %} {% endblock %}
 
-{% block content %} This is the Index page for Mozio application. {% endblock %}
+{% block content %}
+  <h2>Define your Service Area</h2>
+  <div id="map" style="width: 1080px; height: 550px;"></div>
+{% endblock %}
+
+{% block js_scripts %}
+      <script>
+        function initMap() {
+          var map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 37.770767, lng: -122.424877}, // San Franscisco
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            zoom: 15,
+            draggable: true,
+            mapTypeControl: false,
+            panControl: false,
+            streetViewControl: false,
+            zoomControl: true,
+            zoomControlOptions: {
+              style: google.maps.ZoomControlStyle.SMALL
+            }
+          });
+
+          var drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.MARKER,
+            drawingControl: true,
+            drawingControlOptions: {
+              position: google.maps.ControlPosition.TOP_CENTER,
+              drawingModes: [
+                google.maps.drawing.OverlayType.MARKER,
+                google.maps.drawing.OverlayType.CIRCLE,
+                google.maps.drawing.OverlayType.POLYGON,
+                google.maps.drawing.OverlayType.POLYLINE,
+                google.maps.drawing.OverlayType.RECTANGLE
+              ]
+            },
+            markerOptions: {icon: 'images/beachflag.png'},
+            circleOptions: {
+              fillColor: '#ffff00',
+              fillOpacity: 1,
+              strokeWeight: 5,
+              clickable: false,
+              editable: true,
+              zIndex: 1
+            }
+          });
+
+          drawingManager.setMap(map);
+
+
+
+          google.maps.event.addListener(drawingManager, 'polygoncomplete', function (polygon) {
+            var coordinates = (polygon.getPath().getArray());
+            for(var i = 0; i < coordinates.length; i++){
+              console.log(i + ' - LAT: ' + coordinates[i].lat() + ' LNG: ' + coordinates[i].lng());
+            }
+          });
+      }
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&signed_in=true&libraries=drawing&callback=initMap"></script>
+{% endblock %}
