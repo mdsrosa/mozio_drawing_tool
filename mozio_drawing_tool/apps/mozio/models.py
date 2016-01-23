@@ -24,7 +24,7 @@ class Company(BaseModel):
         return self.name
 
 class ServiceAreaCompany(BaseModel):
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, related_name='company')
 
     class Meta:
         db_table = 'companies_service_areas'
@@ -32,7 +32,7 @@ class ServiceAreaCompany(BaseModel):
         verbose_name_plural = 'Company Service Areas'
 
 class Point(BaseModel):
-    service_area = models.ForeignKey(ServiceAreaCompany)
+    service_area = models.ForeignKey(ServiceAreaCompany, related_name='points')
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
 
