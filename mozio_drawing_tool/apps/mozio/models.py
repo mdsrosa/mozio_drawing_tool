@@ -1,5 +1,46 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 
-# Create your models here.
+from django.utils.translation import ugettext_lazy as _
+
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+class Company(BaseModel):
+    name = models.CharField(_('Name'), max_length=255)
+
+    class Meta:
+        db_table = 'companies'
+        verbose_name = 'Company'
+        verbose_name_plural = 'Companies'
+
+    def __unicode__(self):
+        return self.name
+
+class ServiceAreaCompany(BaseModel):
+    company = models.ForeignKey(Company)
+
+    class Meta:
+        db_table = 'companies_service_areas'
+        verbose_name = 'Company Service Area'
+        verbose_name_plural = 'Company Service Areas'
+
+class Point(BaseModel):
+    service_area = models.ForeignKey(ServiceAreaCompany)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+
+    class Meta:
+        db_table = 'service_area_points'
+        ordering = ['-created_at']
+        verbose_name = 'Service Area Point'
+        verbose_name_plural = 'Service Area Points'
+
+    def __unicode__(self):
+        return 'Point (%.6f, %.6f)' % (self.latitude, self.longitude)
