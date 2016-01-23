@@ -11,8 +11,16 @@
   <link href="{% static 'bootstrap/css/bootstrap-theme.min.css' %}" rel="stylesheet">
 </head>
 <body>
+  {% if messages %}
+    <div id="alert_messages">
+        {% for message in messages %}
+          {% include 'alert_messages.html' with message=message.message alert_type=message.tags %}
+        {% endfor %}
+    </div>
+  {% endif %}
+
   <div class="container-fluid">
-    {% block content %} Welcome. {% endblock %}
+    {% block content %} <h2>Welcome.</h2> {% endblock %}
   </div>
 
 

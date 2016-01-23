@@ -12,23 +12,47 @@
     </div>
 
     <div class="col-lg-4">
+       <div class="row">
+        <div class="col-lg-4">
+            <input type="button" id="clear-btn" class="btn btn-sm btn-danger"
+                   value='{% trans "Clear shape" %}' />
+        </div>
+      </div>
+
+      <br/><br/>
+
       <h4>Your Service Area coordinates:</h4>
       <div class="row">
         <span class="col-lg-7" id="empty-points-message">No service area has been drawn yet.</span>
         <div id="points"></div>
       </div>
-      <br/><br/>
 
-      <input type="button" id="clear-btn" class="btn btn-md btn-danger"
-             value='{% trans "Clear shape" %}' />
-      <input type="submit" id="submit-btn" class="btn btn-md btn-success"
-             value='{% trans "Submit Service Area" %}' />
+      <br/>
+
+      <div class="row">
+        <div class="col-lg-4">
+          <form method="post" action="{% url 'mozio_create_service_area' %}">
+              {% csrf_token %}
+              <div class="form-group">
+                  <label for="company">{{ form.company.label }}</label>
+                  {{ form.company }}
+              </div>
+
+              <div id="form-points"></div>
+
+              <input type="submit" id="submit-btn" class="btn btn-md btn-success"
+                     value='{% trans "Submit Service Area" %}' />
+          </form>
+        </div>
+      </div>
     </div>
   </div>
   <br />
 {% endblock %}
 
 {% block js_scripts %}
+
+      <!-- Google Map -->
       <script>
         var drawingManager;
         var selectedShape;
@@ -61,13 +85,27 @@
 
         function updatePoints(shape){
           console.log('Polygon changed (SET_AT).');
+
           var coordinates = (shape.getPath().getArray());
+
           $('#empty-points-message').hide();
-          $('#points').html(''); // clean old points
+
+          var hidden_fields = "";
+          var points = "";
+
           for(var i = 0; i < coordinates.length; i++){
+            var lat = coordinates[i].lat();
+            var lng = coordinates[i].lng();
+
             // update the fields for the latitude and longitude
-            $('#points').append('<div>Point '+ i + ': ' + ' <b>LAT</b>: ' + coordinates[i].lat() + ' <b>LNG</b>: ' + coordinates[i].lng() + '</div>');
+            field_value = "lat="+lat+"&lng="+lng;
+            points += '<div>Point '+i+ ': ' + ' <b>LAT</b>: ' +lat+ ' <b>LNG</b>: ' +lng+ '</div>\n';
+            hidden_fields += "<input type='hidden'name='latitude_and_longitude[]'value='"+field_value+"'/>";
           }
+
+          $('#points').html(points);
+          $('#form-points').html(hidden_fields);
+
           setSelection(shape);
         }
 
