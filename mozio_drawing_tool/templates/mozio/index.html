@@ -45,6 +45,24 @@
           </form>
         </div>
       </div>
+      <br /><br/>
+      <div class="row">
+        <div class="col-lg-10">
+          <h4>Latest Service Area</h4>
+          <strong>Company:</strong> {{ latest_service_area.company }}<br/>
+          <strong>Date:</strong> {{ latest_service_area.created_at|date:"Y-m-d H:i:s" }}<br/>
+          {% with points=latest_service_area.points.all %}
+            {% for point in points %}
+              Point {{ forloop.counter }}: <strong> LAT: </strong> {{ point.latitude|floatformat:6 }} - LNG: {{ point.longitude|floatformat:6 }}<br/>
+
+              <input type="hidden" name="service-area-{{ latest_service_area.pk }}"
+                  data-latitude="{{ point.latitude|floatformat:6 }}" data-longitude="{{ point.longitude|floatformat:6 }}" />
+            {% endfor %}
+          {% endwith %}<br/>
+          <input type="button" value="Draw on the map" class="btn btn-sm  btn-info"
+            onclick="drawOnTheMap({{ latest_service_area.pk }});"/>
+        </div>
+      </div>
     </div>
   </div>
   <br />
@@ -54,6 +72,7 @@
 
       <!-- Google Map -->
       <script>
+        var map;
         var drawingManager;
         var selectedShape;
         var infoWindow;
@@ -76,7 +95,8 @@
         function deleteSelectedShape(){
           if(selectedShape){
             selectedShape.setMap(null);
-            $('#points').html('');
+            $('#points').html("");
+            $('#form-points').html("");
           }else{
             alert('{% trans "No shape found. There is nothing to clean." %}');
           }
@@ -144,9 +164,34 @@
           updatePoints(polygon);
         }
 
+        function drawOnTheMap(service_area){
+          var fields = $('input[name=service-area-' + service_area);
+          var coords = new Array();
+
+          $(fields).each(function(index){
+              var latitude = parseFloat($(this).attr("data-latitude"));
+              var longitude = parseFloat($(this).attr("data-longitude"));
+              coords.push({lat: latitude, lng: longitude});
+          });
+
+          console.log('coords: ' + coords);
+
+          // Construct the polygon.
+          var polygon = new google.maps.Polygon({
+            paths: coords,
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35
+          });
+
+          polygon.setMap(map);
+        }
+
         // initialize the map
         function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
+          map = new google.maps.Map(document.getElementById('map'), {
               center: {lat: 37.770767, lng: -122.424877}, // San Franscisco
               mapTypeId: google.maps.MapTypeId.ROADMAP,
               zoom: 15,
