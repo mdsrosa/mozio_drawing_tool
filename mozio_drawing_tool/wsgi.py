@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mozio_drawing_tool.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mozio_drawing_tool.settings.local")
 
 application = get_wsgi_application()
