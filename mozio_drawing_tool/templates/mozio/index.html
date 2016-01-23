@@ -53,14 +53,14 @@
           <strong>Date:</strong> {{ latest_service_area.created_at|date:"Y-m-d H:i:s" }}<br/>
           {% with points=latest_service_area.points.all %}
             {% for point in points %}
-              Point {{ forloop.counter }}: <strong> LAT: </strong> {{ point.latitude|floatformat:6 }} - LNG: {{ point.longitude|floatformat:6 }}<br/>
+              Point {{ forloop.counter }}: <strong> LAT: </strong> {{ point.latitude }} - <strong>LNG:</strong> {{ point.longitude }}<br/>
 
               <input type="hidden" name="service-area-{{ latest_service_area.pk }}"
-                  data-latitude="{{ point.latitude|floatformat:6 }}" data-longitude="{{ point.longitude|floatformat:6 }}" />
+                  data-latitude="{{ point.latitude }}" data-longitude="{{ point.longitude }}" />
             {% endfor %}
           {% endwith %}<br/>
           <input type="button" value="Draw on the map" class="btn btn-sm  btn-info"
-            onclick="drawOnTheMap({{ latest_service_area.pk }});"/>
+            onclick="drawOnTheMap({{ latest_service_area.pk }});" />
         </div>
       </div>
     </div>
@@ -89,6 +89,11 @@
           clearSelection();
           selectedShape = shape;
           shape.setEditable(true);
+        }
+
+        function setSelectionWithoutEditable(shape){
+          clearSelection();
+          selectedShape = shape;
         }
 
         // function to delete the selected shape
@@ -187,6 +192,9 @@
           });
 
           polygon.setMap(map);
+
+          // set selection so it can be cleaned by the "clear shape" button
+          setSelectionWithoutEditable(polygon);
         }
 
         // initialize the map
@@ -236,5 +244,5 @@
       }
     </script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&signed_in=true&libraries=drawing&callback=initMap"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=drawing&callback=initMap"></script>
 {% endblock %}
