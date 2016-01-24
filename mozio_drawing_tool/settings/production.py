@@ -29,7 +29,8 @@ STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 S3_URL = 'http://%s.s3.amazonws.com/' % AWS_STORAGE_BUCKET_NAME
 STATIC_URL = S3_URL
 
-ALLOWED_HOSTS = ["ec2-54-94-138-192.sa-east-1.compute.amazonaws.com"]
+ALLOWED_HOSTS = ["ec2-54-94-138-192.sa-east-1.compute.amazonaws.com",
+                  "ec2-54-94-128-84.sa-east-1.compute.amazonaws.com"]
 
 LOGGING = {
     'version': 1,
