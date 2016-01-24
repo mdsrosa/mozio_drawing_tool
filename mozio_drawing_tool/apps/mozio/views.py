@@ -3,9 +3,10 @@ from django.conf import settings
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext
+from django.http import JsonResponse
 
 from .forms import CreateServiceAreaForm
-from .models import ServiceAreaCompany
+from .models import ServiceAreaCompany, Point
 
 
 def index(request):
@@ -39,4 +40,26 @@ def create_service_area(request):
         return redirect('mozio_index')
 
 def validate_point(request):
-    return render_to_response('mozio/validate_point.html', {}, context_instance=RequestContext(request))
+    context = {
+        'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
+    }
+    return render_to_response('mozio/validate_point.html', context, context_instance=RequestContext(request))
+
+def points_json(request):
+    service_areas = ServiceAreaCompany.objects.select_related().all()
+
+    points_list = []
+
+    for service_area in service_areas:
+        points = []
+        service_area_points = service_area.points.all()
+
+        for point in service_area_points:
+            points.append({'lat': float(point.latitude),
+                           'lng': float(point.longitude)})
+        points_list.append({
+            'company_name': service_area.company.name,
+            'points': points
+        })
+
+    return JsonResponse(points_list, safe=False)
