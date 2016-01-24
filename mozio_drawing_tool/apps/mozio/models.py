@@ -34,7 +34,10 @@ class ServiceAreaCompany(BaseModel):
 
     @classmethod
     def latest(cls):
-        return cls.objects.select_related().order_by('-created_at')[0]
+        latests = cls.objects.select_related().order_by('-created_at')
+        if latests.count() > 0:
+            return latests[0]
+        return latests
 
 class Point(BaseModel):
     service_area = models.ForeignKey(ServiceAreaCompany, related_name='points')
