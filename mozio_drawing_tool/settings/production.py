@@ -28,3 +28,31 @@ AWS_STORAGE_BUCKET_NAME = 'mozio-django-app-staticfiles'
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 S3_URL = 'http://%s.s3.amazonws.com/' % AWS_STORAGE_BUCKET_NAME
 STATIC_URL = S3_URL
+
+ALLOWED_HOSTS = ["ec2-54-94-138-192.sa-east-1.compute.amazonaws.com"]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(module)s %(process)d %(thread)d %(message)s'
+        }
+    },
+    'handlers': {
+        'gunicorn': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filename': '/home/ubuntu/webapps/mozio_drawing_tool/logs/gunicorn.errors',
+            'maxBytes': 1024 * 1024 * 100,  # 100 mb
+        }
+    },
+    'loggers': {
+        'gunicorn.errors': {
+            'level': 'DEBUG',
+            'handlers': ['gunicorn'],
+            'propagate': True,
+        },
+    }
+}
