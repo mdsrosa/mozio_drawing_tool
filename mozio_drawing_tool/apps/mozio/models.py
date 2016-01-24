@@ -1,9 +1,8 @@
 from __future__ import unicode_literals
 
-from django.db import models
-from django.contrib.gis.db import models as gis_models
-
 from django.utils.translation import ugettext_lazy as _
+from django.db import models
+
 
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
