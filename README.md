@@ -2,7 +2,7 @@
 
 A simple django application to manage shuttle companies services areas using Google Maps Javascript API.
 
-[![Django version](https://img.shields.io/badge/Django-v1.9.1-blue.svg)](https://docs.djangoproject.com/en/1.9/) [![MySQL version](https://img.shields.io/badge/MySQL-5.6-orange.svg)](https://dev.mysql.com/doc/refman/5.6/en/) [![Google Maps JavaScript API v3](https://img.shields.io/badge/Google_Maps_JavaScript_API-v3-green.svg)](https://developers.google.com/maps/documentation/javascript/)
+[![Python version](https://img.shields.io/badge/Python-v2.7.10-blue.svg)](https://www.python.org/downloads/release/python-2710/) [![Django version](https://img.shields.io/badge/Django-v1.9.1-blue.svg)](https://docs.djangoproject.com/en/1.9/) [![Fabric version](https://img.shields.io/badge/Fabric-1.4.3-brightgreen.svg)](http://docs.fabfile.org/en/1.10/) [![MySQL version](https://img.shields.io/badge/MySQL-5.6-orange.svg)](https://dev.mysql.com/doc/refman/5.6/en/) [![Google Maps JavaScript API v3](https://img.shields.io/badge/Google_Maps_JavaScript_API-v3-green.svg)](https://developers.google.com/maps/documentation/javascript/)
 
 ## Installation
 ###### **Considering you already have a Python development environment setup.**
@@ -46,3 +46,22 @@ This view is responsible for providing a map where you can click on any point on
 
 #### How to use it
 Click anywhere on the map to find out if that point is within a bounding box or not. If it doesn't find any Companies in that point it will tell you that that point is available.
+
+
+## Tests
+I love tests. But, since this is just a prototype of a solution for a specific problem, I didn't focus on them, I did focus more in the implementation itself.
+
+## Possible improvements
+
+Here are some ideas for this project that I think it could make the product better:
+
+* Authentication by company
+* Dashboard to show all the service areas in a list
+* Possibility to edit a service area
+* Possibility to delete a service area
+* Suggest services areas for the company
+* Register multiple service areas at once
+* Temporary service areas (with due date)
+* Company profile showing a marker on every service area it serves
+
+That's some of my ideas based on the knowlodge I've about this specific project.
