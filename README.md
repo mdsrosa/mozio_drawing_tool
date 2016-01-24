@@ -1,2 +1,48 @@
-# mozio_drawing_tool
-A simple django application to register shuttle company's service areas using Google Maps API
+# Mozio - Service Area Drawing Tool
+
+A simple django application to manage shuttle companies services areas using Google Maps Javascript API.
+
+[![Django version](https://img.shields.io/badge/Django-v1.9.1-blue.svg)](https://docs.djangoproject.com/en/1.9/) [![MySQL version](https://img.shields.io/badge/MySQL-5.6-orange.svg)](https://dev.mysql.com/doc/refman/5.6/en/) [![Google Maps JavaScript API v3](https://img.shields.io/badge/Google_Maps_JavaScript_API-v3-green.svg)](https://developers.google.com/maps/documentation/javascript/)
+
+## Installation
+###### **Considering you already have a Python development environment setup.**
+
+```bash
+$ git clone https://github.com/mdsrosa/mozio_drawing_tool.git
+$ cd mozio_drawing_tool
+$ mkvirtualenv routes-api-dev
+$ pip install -r requirements/dev.txt
+```
+
+### Running Locally
+```bash
+$ python manage.py migrate --settings=mozio_drawing_tool.settings.local
+$ python manage.py runserver --settings=mozio_drawing_tool.settings.local
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 24, 2016 - 03:05:53
+Django version 1.9.1, using settings 'mozio_drawing_tool.settings.local'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+```
+
+# Views
+
+#### GET /mozio/index
+
+This view is responsible for the interface where the user can define a service area.
+
+<img src="mozio_drawing_tool/static/images/mozio_define_your_service_area.png" width="480" />
+
+#### How to use it
+In the "Define your service area" page, start by clicking in the polygon icon <img src="mozio_drawing_tool/static/images/polygon_icon.png" width="20"height="20" /> to draw your service area. The points you draw will show up on the right side with the `latitude` and `longitude` informations. You can edit the draw as much as you like. If you're sure that's your service area, select the company and then hit the `Submit Service Area` button, if not you can always hit the `Clean shape` button and start over.
+
+#### GET /mozio/validate-point
+
+This view is responsible for providing a map where you can click on any point on the map and find out if that point is within the bounding box.
+
+<img src="mozio_drawing_tool/static/images/mozio_validate_point.png" width="480" />
+
+#### How to use it
+Click anywhere on the map to find out if that point is within a bounding box or not. If it doesn't find any Companies in that point it will tell you that that point is available.
