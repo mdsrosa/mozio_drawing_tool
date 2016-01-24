@@ -37,3 +37,6 @@ def create_service_area(request):
             messages.error(request, _(form.get_error_messages()))
 
         return redirect('mozio_index')
+
+def validate_point(request):
+    return render_to_response('mozio/validate_point.html', {}, context_instance=RequestContext(request))
