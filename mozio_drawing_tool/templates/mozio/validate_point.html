@@ -6,6 +6,8 @@
 {% block content %}
   <h2>Validate Point</h2>
 
+  <p>Click anywhere in the map to find out if that point is within a bounding box or not.</p>
+
   <div class="row">
     <div class="col-lg-8">
        <div id="map" style="width: 850px; height: 550px;"></div>
@@ -18,15 +20,21 @@
 
 {% block js_scripts %}
 
-      <!-- Google Map -->
+      <!-- Google Maps -->
       <script>
-        function placeMarkerAndPanTo(latLng, map) {
+        function placeMarkerAndPanTo(latLng, map, title) {
           var marker = new google.maps.Marker({
             position: latLng,
             map: map
           });
 
           map.panTo(latLng);
+
+          var infowindow = new google.maps.InfoWindow({
+              content: title
+          });
+
+          infowindow.open(map, marker);
         }
 
         // initialize the map
@@ -46,11 +54,30 @@
           });
 
           map.addListener('click', function(e) {
-            console.log("LAT: " + e.latLng.lat() + " LNG: " + e.latLng.lng());
-            placeMarkerAndPanTo(e.latLng, map);
+
+            var latitude = e.latLng.lat();
+            var longitude = e.latLng.lng();
+
+            $.getJSON("{% url 'mozio_json_points' %}", function(data) {
+               $.each(data, function(key, service_area){
+                    console.log(service_area);
+                    var polygon = new google.maps.Polygon({paths: service_area.points});
+                    var result = google.maps.geometry.poly.containsLocation(e.latLng, polygon);
+
+                    if(result){
+                      alert('Found it! This point is in ' + service_area.company_name + '\'s service area.');
+
+                      title = service_area.company_name + " serves here!"
+
+                      placeMarkerAndPanTo(e.latLng, map, title);
+
+                      return false;
+                    }
+               });
+            });
           });
       }
     </script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=drawing&callback=initMap"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=geometry&callback=initMap"></script>
 {% endblock %}
