@@ -7,7 +7,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mozio',
         'USER': 'mozio',
-        'PASSWORD': 'moziodjangoapp'
+        'PASSWORD': 'moziodjangoapp',
         'HOST': 'mozio-django-app-mysql-db.ckcjy5xii4eu.sa-east-1.rds.amazonaws.com',
         'PORT': '3306'
     }
