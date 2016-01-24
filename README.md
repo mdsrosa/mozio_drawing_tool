@@ -29,7 +29,7 @@ Quit the server with CONTROL-C.
 
 # Views
 
-#### GET /mozio/index
+#### GET /mozio/define-your-service-area
 
 This view is responsible for the interface where the user can define a service area.
 
@@ -45,7 +45,7 @@ This view is responsible for providing a map where you can click on any point on
 <img src="mozio_drawing_tool/static/images/mozio_validate_point.png" width="480" />
 
 #### How to use it
-Click anywhere on the map to find out if that point is within a bounding box or not. If it doesn't find any Companies in that point it will tell you that that point is available.
+Click anywhere on the map to find out if that point is within a bounding box or not. If there is one, it will put a marker on the spot and show the company's name that servers in that region.
 
 
 ## Tests
