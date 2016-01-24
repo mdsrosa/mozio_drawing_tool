@@ -10,6 +10,10 @@ from .models import ServiceAreaCompany, Point
 
 
 def index(request):
+    """
+    This view is responsible for the interface where the user can define
+    a service area.
+    """
     latest_service_area = ServiceAreaCompany.latest
 
     context = {
@@ -22,6 +26,9 @@ def index(request):
                               context_instance=RequestContext(request))
 
 def create_service_area(request):
+    """
+    This view is responsible for saving the Service Area into the database.
+    """
     if request.method == 'POST':
         form = CreateServiceAreaForm(request.POST)
         if form.is_valid():
@@ -40,12 +47,21 @@ def create_service_area(request):
         return redirect('mozio_index')
 
 def validate_point(request):
+    """
+    This view is responsible for providing a map where you can
+    click on any point on the map and find out if that point is
+    within the bounding box.
+    """
     context = {
         'GOOGLE_MAPS_API_KEY': settings.GOOGLE_MAPS_API_KEY
     }
     return render_to_response('mozio/validate_point.html', context, context_instance=RequestContext(request))
 
 def points_json(request):
+    """
+    This view is responsible for providing the points of every service area
+    in a jSON format.
+    """
     service_areas = ServiceAreaCompany.objects.select_related().all()
 
     points_list = []
