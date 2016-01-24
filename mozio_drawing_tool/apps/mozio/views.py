@@ -67,8 +67,8 @@ def points_json(request):
     points_list = []
 
     for service_area in service_areas:
-        points = []
         service_area_points = service_area.points.all()
+        points = []
 
         for point in service_area_points:
             points.append({'lat': float(point.latitude),
